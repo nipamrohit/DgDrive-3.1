@@ -62,41 +62,42 @@ const UploadFile = () => {
     return res.data.IpfsHash;
   };
 
-  const handleUpload = async () => {
-    if (selectedFiles.length === 0) {
-      alert("Please select files to upload");
-      return;
-    }
+const handleUpload = async () => {
+  if (selectedFiles.length === 0) {
+    alert("Please select files to upload");
+    return;
+  }
 
-    setUploading(true);
+  setUploading(true);
 
-    try {
-      await window.ethereum.request({ method: "eth_requestAccounts" });
-      const provider = new ethers.providers.Web3Provider(window.ethereum);
-      const signer = provider.getSigner();
-      const contract = new ethers.Contract(CONTRACT_ADDRESS, CONTRACT_ABI, signer);
+  try {
+    await window.ethereum.request({ method: "eth_requestAccounts" });
+    const provider = new ethers.providers.Web3Provider(window.ethereum);
+    const signer = provider.getSigner();
+    const contract = new ethers.Contract(CONTRACT_ADDRESS, CONTRACT_ABI, signer);
 
-      for (const file of selectedFiles) {
-    const ipfsHash = await uploadToPinata(file);
-    try {
-        const tx = await contract.uploadFile(ipfsHash, { gasLimit: 500000 });
+    for (const file of selectedFiles) {
+      const ipfsHash = await uploadToPinata(file);
+      try {
+        // FIXED: Pass both file name and hash
+        const tx = await contract.uploadFile(file.name, ipfsHash, { gasLimit: 500000 });
         await tx.wait();
         console.log(`Uploaded ${file.name} with CID: ${ipfsHash}`);
-    } catch (err) {
+      } catch (err) {
         console.error("Upload failed:", err.error?.message || err.message);
+      }
     }
-}
 
+    alert("All files uploaded successfully!");
+    setSelectedFiles([]);
+  } catch (err) {
+    console.error("Upload error:", err);
+    alert("Error uploading files. Check console for details.");
+  } finally {
+    setUploading(false);
+  }
+};
 
-      alert("All files uploaded successfully!");
-      setSelectedFiles([]);
-    } catch (err) {
-      console.error("Upload error:", err);
-      alert("Error uploading files. Check console for details.");
-    } finally {
-      setUploading(false);
-    }
-  };
 
   return (
     <Section className="overflow-hidden">

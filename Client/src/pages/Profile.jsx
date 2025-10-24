@@ -410,15 +410,20 @@ const Profile = () => {
               </p>
             </div>
             <div className="flex space-x-3">
-              <Button onClick={openEtherscan} className="flex items-center">
-                <AiOutlineEye className="mr-2" />
-                Etherscan
-              </Button>
-              <Button onClick={openMetaMaskDashboard} className="flex items-center">
-                <AiOutlineExport className="mr-2" />
-                MetaMask Dashboard
-              </Button>
-            </div>
+  <Button onClick={openEtherscan}>
+    <span className="flex items-center">
+      <AiOutlineExport className="mr-2 text-xl" />
+      <span>Etherscan</span>
+    </span>
+  </Button>
+  <Button onClick={openMetaMaskDashboard}>
+    <span className="flex items-center">
+      <AiOutlineExport className="mr-2 text-xl" />
+      <span>MetaMask Dashboard</span>
+    </span>
+  </Button>
+</div>
+
           </div>
         )}
 
